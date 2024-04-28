@@ -21,6 +21,7 @@
     <!-- microservices -->
     <modules>
         <module>gateway-service</module>
+        <module>registry-service</module>
     </modules>
 
     <properties>
