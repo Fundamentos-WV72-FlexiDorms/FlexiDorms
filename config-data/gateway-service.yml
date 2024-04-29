@@ -25,5 +25,6 @@ spring:
           uri: lb://userauth-service
           #routes to be exposed
           predicates:
-            - Path=/user/**
-            - Path=/auth/**
+            - Path=/api/user/**
+            - Path=/api/auth/**
+            - Path=/swagger-ui/**
