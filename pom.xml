@@ -23,6 +23,7 @@
         <module>gateway-service</module>
         <module>registry-service</module>
         <module>config-service</module>
+        <module>userauth-service</module>
     </modules>
 
     <properties>
