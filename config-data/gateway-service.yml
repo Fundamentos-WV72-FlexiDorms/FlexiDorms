@@ -20,8 +20,10 @@ spring:
         locator:
           enabled: true
       routes:
-        - id: userauth-service #id of the service (name of the service)
-          uri: lb://userauth-service #uri of the service (same as the service id)
-          predicates: #routes to be exposed
+        #id of the service (in uri field must be the same as this id)
+        - id: userauth-service
+          uri: lb://userauth-service
+          #routes to be exposed
+          predicates:
             - Path=/user/**
             - Path=/auth/**
