@@ -19,7 +19,7 @@ spring:
       mvc:
         routes:
         - id: userauth-service
-          uri: lb://userauth-service
+          uri: http://localhost:8090
           predicates:
           - Path=/api/user/**
           - Path=/api/auth/**

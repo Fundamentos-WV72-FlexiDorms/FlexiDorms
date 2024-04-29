@@ -1,6 +1,6 @@
 #service port (the system randomly assigns a free port)
 server:
-  port: ${PORT:${SERVER_PORT:0}}
+  port: 8090
 
 #register with eureka
 eureka:
@@ -10,4 +10,4 @@ eureka:
     service-url:
       default-zone: http://localhost:8761/eureka
   instance:
-    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+    hostname: localhost
