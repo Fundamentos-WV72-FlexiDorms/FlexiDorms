@@ -16,15 +16,13 @@ eureka:
 spring:
   cloud:
     gateway:
-      discovery:
-        locator:
-          enabled: true
-      routes:
-        #id of the service (in uri field must be the same as this id)
-        - id: userauth-service
-          uri: lb://userauth-service
-          #routes to be exposed
-          predicates:
-            - Path=/api/user/**
-            - Path=/api/auth/**
-            - Path=/swagger-ui/**
+      mvc:
+        routes:
+          #id of the service (in uri field must be the same as this id)
+          - id: userauth-service
+            uri: lb://userauth-service
+            #routes to be exposed
+            predicates:
+              - Path=/api/user/**
+              - Path=/api/auth/**
+              - Path=/swagger-ui/**
