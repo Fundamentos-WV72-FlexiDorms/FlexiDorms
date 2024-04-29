@@ -11,10 +11,18 @@ This service is responsible for service discovery and registration of services. 
 
 3. **Gateway service:**
 This service is responsible for routing the requests to the appropriate service.
+    - URL: `http://localhost:8080/`
 
 4. **User service:**
 This service is responsible for user management. Also, it provides the APIs for user registration, login, logout, etc.
     - URL: `http://localhost:8090/`
+
+## Order to start the services:
+1. Config service
+2. Registry service
+3. Admin service
+4. Gateway service
+5. the other services...
 
 ## Util commands:
 - **Search with process use a specific port:** 
