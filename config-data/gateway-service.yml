@@ -1,0 +1,27 @@
+#service port
+server:
+  port: 8080
+
+#register with eureka
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      default-zone: http://localhost:8761/eureka
+  instance:
+    hostname: localhost
+
+#expose service's routes
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: userauth-service #id of the service (name of the service)
+          uri: lb://userauth-service #uri of the service (same as the service id)
+          predicates: #routes to be exposed
+            - Path=/user/**
+            - Path=/auth/**
