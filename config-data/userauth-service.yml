@@ -1,6 +1,6 @@
-#service port (the system randomly assigns a free port)
+#service port
 server:
-  port: ${PORT:${SERVER_PORT:0}}
+  port: 8090
 
 #register with eureka
 eureka:
