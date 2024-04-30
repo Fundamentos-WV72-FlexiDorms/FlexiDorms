@@ -17,9 +17,10 @@ spring:
       discovery:
         locator:
           enabled: true
+          lower-case-service-id: true
       routes:
         - id: userauth-service
-          uri: 'http://localhost:8090'
+          uri: lb://userauth-service
           predicates:
             - Path=/api/user/**
             - Path=/api/auth/**
