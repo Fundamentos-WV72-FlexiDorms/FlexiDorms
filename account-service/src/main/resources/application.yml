@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: account-service
+  config:
+    import:
+     - configserver:http://localhost:8888
+     - env.properties
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+#jwt properties
+app:
+  jwt:
+    secret-key: ${JWT_SECRET_KEY}
+    expiration-min: ${JWT_EXPIRATION_MINUTES}

@@ -8,8 +8,8 @@ spring:
     config:
       server:
         git:
-          uri: https://github.com/Fundamentos-WV72-FlexiDorms/FlexiDorms
-          default-label: master
+          uri: https://github.com/Fundamentos-WV72-FlexiDorms/FlexiDorms.git
+          default-label: develop
           searchPaths: config-data
           username: ${GIT_USERNAME}
           password: ${GIT_PASSWORD}
