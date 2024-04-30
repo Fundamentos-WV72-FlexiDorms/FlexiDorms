@@ -25,3 +25,8 @@ spring:
             - Path=/api/user/**
             - Path=/api/auth/**
             - Path=/swagger-ui/**
+
+#logging requests
+logging:
+  level:
+    org.springframework.cloud.gateway.handler.RoutePredicateHandlerMapping: TRACE
