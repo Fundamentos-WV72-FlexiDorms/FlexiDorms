@@ -11,11 +11,13 @@ eureka:
 spring:
   cloud:
     gateway:
-      mvc:
-        routesMap:
-          userauth-service:
-            uri: http://localhost:8090
-            predicates:
-              - Path=/api/user/**
-              - Path=/api/auth/**
-              - Path=/swagger-ui/**
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: userauth-service
+          uri: lb://userauth-service
+          predicates:
+            - Path=/api/user/**
+            - Path=/api/auth/**
+            - Path=/swagger-ui/**
