@@ -1,5 +1,7 @@
 package com.techartistry.accountservice.security.application.services.impl;
 
+import com.techartistry.accountservice.events.service.KafkaProducerService;
+import com.techartistry.accountservice.security.domain.events.UserSignedUpEventData;
 import com.techartistry.accountservice.user.domain.entities.Lessor;
 import com.techartistry.accountservice.user.domain.entities.Student;
 import com.techartistry.accountservice.user.domain.enums.ERole;
@@ -9,10 +11,8 @@ import com.techartistry.accountservice.security.application.dto.request.RefreshT
 import com.techartistry.accountservice.security.application.dto.request.SignInUserRequestDto;
 import com.techartistry.accountservice.security.application.dto.request.SignUpLessorRequestDto;
 import com.techartistry.accountservice.security.application.dto.request.SignUpStudentRequestDto;
-import com.techartistry.accountservice.security.application.dto.response.LessorSignUpResponseDto;
 import com.techartistry.accountservice.security.application.dto.response.RefreshTokenResponseDto;
 import com.techartistry.accountservice.security.application.dto.response.SignInResponseDto;
-import com.techartistry.accountservice.security.application.dto.response.StudentSignUpResponseDto;
 import com.techartistry.accountservice.security.application.services.IAuthService;
 import com.techartistry.accountservice.security.application.services.IJwtService;
 import com.techartistry.accountservice.security.application.services.ITokenService;
@@ -39,8 +39,9 @@ public class AuthService implements IAuthService {
     private final ITokenService tokenService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final KafkaProducerService kafkaProducerService;
 
-    public AuthService(IUserRepository userRepository, IRoleRepository roleRepository, ModelMapper modelMapper, IJwtService jwtService, ITokenService tokenService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager) {
+    public AuthService(IUserRepository userRepository, IRoleRepository roleRepository, ModelMapper modelMapper, IJwtService jwtService, ITokenService tokenService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, KafkaProducerService kafkaProducerService) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.modelMapper = modelMapper;
@@ -48,10 +49,11 @@ public class AuthService implements IAuthService {
         this.tokenService = tokenService;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
+        this.kafkaProducerService = kafkaProducerService;
     }
 
     @Override
-    public ApiResponse<StudentSignUpResponseDto> signUpStudent(SignUpStudentRequestDto request) {
+    public ApiResponse<Object> signUpStudent(SignUpStudentRequestDto request) {
         //validar que el email y el número de celular no están registrados
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "Error", "The email given is already registered");
@@ -74,14 +76,23 @@ public class AuthService implements IAuthService {
         //guarda el Student
         var studentCreated = userRepository.save(student);
 
-        //convertir el objeto de tipo User (entity) a un objeto de tipo StudentResponseDto (dto)
-        var studentResponseDto = modelMapper.map(studentCreated, StudentSignUpResponseDto.class);
+        //crea el token de verificación de email
+        var token = tokenService.generateEmailConfirmationToken(studentCreated);
 
-        return new ApiResponse<>("Student was successfully registered", true, studentResponseDto);
+        //envía el evento de creación de cuenta de arrendador
+        var eventData = new UserSignedUpEventData(
+                studentCreated.getUserId(),
+                studentCreated.getFullName(),
+                studentCreated.getEmail(),
+                token.getToken()
+        );
+        kafkaProducerService.publishEvent(eventData);
+
+        return new ApiResponse<>("Student was successfully registered", true, null);
     }
 
     @Override
-    public ApiResponse<LessorSignUpResponseDto> signUpLessor(SignUpLessorRequestDto request) {
+    public ApiResponse<Object> signUpLessor(SignUpLessorRequestDto request) {
         //validar que el email y el número de celular no están registrados
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "Error", "The email given is already registered");
@@ -101,13 +112,22 @@ public class AuthService implements IAuthService {
                 .orElseThrow(() -> new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "Error", "Role not found"));
         lessor.setRoles(Collections.singleton(roles)); //establece un solo rol
 
-        //guarda el Student
+        //guarda el arrendador
         var lessorCreated = userRepository.save(lessor);
 
-        //convertir el objeto de tipo User (entity) a un objeto de tipo StudentResponseDto (dto)
-        var lessorResponseDto = modelMapper.map(lessorCreated, LessorSignUpResponseDto.class);
+        //crea el token de verificación de email
+        var token = tokenService.generateEmailConfirmationToken(lessorCreated);
 
-        return new ApiResponse<>("Lessor was successfully registered", true, lessorResponseDto);
+        //envía el evento de creación de cuenta de arrendador
+        var eventData = new UserSignedUpEventData(
+            lessorCreated.getUserId(),
+            lessorCreated.getFullName(),
+            lessorCreated.getEmail(),
+            token.getToken()
+        );
+        kafkaProducerService.publishEvent(eventData);
+
+        return new ApiResponse<>("Lessor was successfully registered", true, null);
     }
 
     @Override
@@ -131,6 +151,34 @@ public class AuthService implements IAuthService {
 
         var responseData = new SignInResponseDto(accessToken, refreshToken.getToken());
         return new ApiResponse<>("Authentication successful", true, responseData);
+    }
+
+    @Override
+    public ApiResponse<Object> verifyUserAccount(String token) {
+        //busca el token
+        var confirmationToken = tokenService.findByTokenAndTokenType(token, ETokenType.EMAIL_CONFIRMATION)
+                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "Error in account verification", "Token not found or invalid"));
+
+        //si el token expiró
+        if (confirmationToken.isExpired() || confirmationToken.isRevoked()) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "Error in account verification", "Token has expired or has been revoked");
+        }
+
+        //obtiene el email del token
+        var emailFromToken = confirmationToken.getUser().getEmail();
+
+        //busca el usuario por email y lo habilita
+        var user = userRepository.findByEmail(emailFromToken)
+                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "Error in account verification", "User not found with email " + emailFromToken));
+        user.setVerified(true);
+
+        //revoca el token
+        tokenService.revokeToken(confirmationToken.getTokenId(), ETokenType.EMAIL_CONFIRMATION);
+
+        //guarda el usuario
+        userRepository.save(user);
+
+        return new ApiResponse<>("Account verified successfully", true, null);
     }
 
     @Override
