@@ -4,10 +4,8 @@ import com.techartistry.accountservice.security.application.dto.request.RefreshT
 import com.techartistry.accountservice.security.application.dto.request.SignInUserRequestDto;
 import com.techartistry.accountservice.security.application.dto.request.SignUpLessorRequestDto;
 import com.techartistry.accountservice.security.application.dto.request.SignUpStudentRequestDto;
-import com.techartistry.accountservice.security.application.dto.response.LessorSignUpResponseDto;
 import com.techartistry.accountservice.security.application.dto.response.RefreshTokenResponseDto;
 import com.techartistry.accountservice.security.application.dto.response.SignInResponseDto;
-import com.techartistry.accountservice.security.application.dto.response.StudentSignUpResponseDto;
 import com.techartistry.accountservice.security.application.services.IAuthService;
 import com.techartistry.accountservice.shared.model.dto.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,14 +29,14 @@ public class AuthController {
 
     @Operation(summary = "Sign up a student")
     @PostMapping("/signUp/student")
-    public ResponseEntity<ApiResponse<StudentSignUpResponseDto>> signUpStudent(@Valid @RequestBody SignUpStudentRequestDto request) {
+    public ResponseEntity<ApiResponse<Object>> signUpStudent(@Valid @RequestBody SignUpStudentRequestDto request) {
         var res = service.signUpStudent(request);
         return new ResponseEntity<>(res, HttpStatus.CREATED);
     }
 
     @Operation(summary = "Sign up a lessor")
     @PostMapping("/signUp/lessor")
-    public ResponseEntity<ApiResponse<LessorSignUpResponseDto>> signUpLessor(@Valid @RequestBody SignUpLessorRequestDto request) {
+    public ResponseEntity<ApiResponse<Object>> signUpLessor(@Valid @RequestBody SignUpLessorRequestDto request) {
         var res = service.signUpLessor(request);
         return new ResponseEntity<>(res, HttpStatus.CREATED);
     }
@@ -47,6 +45,13 @@ public class AuthController {
     @PostMapping("/signIn")
     public ResponseEntity<ApiResponse<SignInResponseDto>> signInUser(@Valid @RequestBody SignInUserRequestDto request) {
         var res = service.signIn(request);
+        return new ResponseEntity<>(res, HttpStatus.OK);
+    }
+
+    @Operation(summary = "Verify the user account")
+    @GetMapping("/verify-account")
+    public ResponseEntity<ApiResponse<Object>> verifyUserAccount(@RequestParam("token") String token) {
+        var res = service.verifyUserAccount(token);
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
