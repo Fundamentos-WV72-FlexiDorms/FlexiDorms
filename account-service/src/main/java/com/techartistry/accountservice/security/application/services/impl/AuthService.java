@@ -164,6 +164,11 @@ public class AuthService implements IAuthService {
             throw new CustomException(HttpStatus.BAD_REQUEST, "Error in account verification", "Token has expired or has been revoked");
         }
 
+        //si el usuario ya está verificado
+        if (confirmationToken.getUser().isVerified()) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "Error in account verification", "User is already verified");
+        }
+
         //obtiene el email del token
         var emailFromToken = confirmationToken.getUser().getEmail();
 
