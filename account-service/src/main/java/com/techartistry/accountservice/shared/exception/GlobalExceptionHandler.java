@@ -86,7 +86,7 @@ public class GlobalExceptionHandler {
     ) {
         var errorMessage = new ErrorMessageResponse(
                 LocalDateTime.now(),
-                exception.getMessage(),
+                exception.getDetails(),
                 webRequest.getDescription(false)
         );
 
