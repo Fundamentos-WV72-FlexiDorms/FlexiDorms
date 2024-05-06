@@ -23,3 +23,7 @@ management:
   endpoint:
     health:
       show-details: always
+
+#avoid self registration with admin server
+spring.boot.admin.discovery.ignored-services:
+  - 'admin-service'
