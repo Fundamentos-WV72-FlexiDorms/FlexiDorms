@@ -30,3 +30,13 @@ spring:
 logging:
   level:
     org.springframework.cloud.gateway.handler.RoutePredicateHandlerMapping: TRACE
+
+#enable & expose actuator endpoints (for admin-server)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always

@@ -80,7 +80,8 @@ public class SecurityConfig {
                         "/oauth2/**",
                         "/v3/api-docs/**",
                         "/error",
-                        "/favicon.ico"
+                        "/favicon.ico",
+                        "/actuator/**"
                     )
                     .permitAll();
                 authorize
