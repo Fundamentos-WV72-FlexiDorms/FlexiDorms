@@ -3,8 +3,8 @@ spring:
     name: account-service
   config:
     import:
-     - configserver:http://localhost:8888
-     - env.properties
+      - configserver:http://localhost:8888
+      - env.properties
   datasource:
     url: ${DB_URL}
     username: ${DB_USER}
