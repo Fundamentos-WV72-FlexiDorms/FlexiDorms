@@ -19,3 +19,11 @@ management:
   endpoint:
     health:
       show-details: always
+
+#Keycloak OAuth2 Configuration
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:3000/realms/Flexidorms
