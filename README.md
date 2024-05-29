@@ -31,8 +31,7 @@ This service is responsible for user management. Also, it provides the APIs for 
     - Windows: `taskkill /F /PID [pid]`
 
 ## Config Keycloak:
-1. **Start Keycloak server:**
-    - `docker run -p 3000:8080 -e KEYCLOAK_ADMIN=<username> -e KEYCLOAK_ADMIN_PASSWORD=<password> quay.io/keycloak/keycloak:24.0.4 start-dev`
+1. **Start Keycloak server:** With docker-compose or `docker run -p 9090:8080 -e KEYCLOAK_ADMIN=<username> -e KEYCLOAK_ADMIN_PASSWORD=<password> quay.io/keycloak/keycloak:24.0.4 start-dev`
 2. **Create a realm (tenant):** Use the app name
 3. **Create a client:** 
     - In the input "Client ID" set: <app-name>-client
