@@ -1,4 +1,4 @@
-package com.techartistry.accountservice.user.application.dto.response;
+package com.techartistry.accountservice.user.application.dto.request;
 
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
