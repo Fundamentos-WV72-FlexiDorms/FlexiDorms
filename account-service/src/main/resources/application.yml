@@ -15,9 +15,3 @@ spring:
       ddl-auto: update
   kafka:
     bootstrap-servers: localhost:9092
-
-#jwt properties
-app:
-  jwt:
-    secret-key: ${JWT_SECRET_KEY}
-    expiration-min: ${JWT_EXPIRATION_MINUTES}
