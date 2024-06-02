@@ -14,10 +14,14 @@ eureka:
 spring:
   cloud:
     gateway:
+      #register with eureka
       discovery:
         locator:
           enabled: true
           lower-case-service-id: true
+      #filters that pass the token to the protected resources (resource servers)
+      default-filters:
+        - TokenRelay
       routes:
         - id: account-service
           uri: lb://account-service
@@ -25,6 +29,13 @@ spring:
             - Path=/api/user/**
             - Path=/api/auth/**
             - Path=/swagger-ui/**
+        - id: rooms-service
+          uri: lb://rooms-service
+          predicates:
+            - Path=/api/room/**
+            - Path=/swagger-ui/**
+          filters:
+            - RemoveRequestHeader=Cookie
 
 #logging requests
 logging:

@@ -1,6 +1,6 @@
 #service port
 server:
-  port: 8090
+  port: 8092
 
 #register with eureka
 eureka:

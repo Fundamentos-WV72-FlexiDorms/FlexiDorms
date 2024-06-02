@@ -9,9 +9,18 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
-public class UpdateLessorRequestDto {
-    @Size(min = 2, max = 50, message = "Full name must be between 2 and 50 characters")
-    private String fullName;
+public class UpdateUserRequestDto {
+    @Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters")
+    private String firstName;
+
+    @Size(min = 2, max = 50, message = "Last name must be between 2 and 50 characters")
+    private String lastName;
+
+    @Size(min = 2, max = 50, message = "Username must be between 2 and 50 characters")
+    private String username;
+
+    @Email(message = "Email must be valid")
+    private String email;
 
     @Size(min = 9, max = 9, message = "Phone number must be 9 characters")
     @Pattern(regexp = "\\d{9}", message = "Phone number must be 9 digits")
@@ -21,17 +30,7 @@ public class UpdateLessorRequestDto {
     @Pattern(regexp = "\\d{8}", message = "DNI must be 8 digits")
     private String dni;
 
-    @Email(message = "Email must be valid")
-    private String email;
-
-    @Size(min = 3, message = "Password must be at least 3 characters")
-    private String password;
-
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate birthDate;
-
-    private String profilePicture;
     private String gender;
 
-    public UpdateLessorRequestDto() {}
+    public UpdateUserRequestDto() {}
 }

@@ -1,30 +1,62 @@
 package com.techartistry.accountservice.user.application.services;
 
-import com.techartistry.accountservice.user.application.dto.request.*;
-import com.techartistry.accountservice.user.application.dto.response.LessorUpdateResponseDto;
-import com.techartistry.accountservice.user.application.dto.response.ProfileResponseDto;
-import com.techartistry.accountservice.user.application.dto.response.StudentUpdateResponseDto;
-import com.techartistry.accountservice.security.domain.model.UserPrincipal;
 import com.techartistry.accountservice.shared.model.dto.ApiResponse;
+import com.techartistry.accountservice.user.application.dto.request.UpdateUserRequestDto;
+import com.techartistry.accountservice.user.application.dto.response.UserProfileResponseDto;
+
+import java.util.List;
 
 public interface IUserService {
     /**
-     * Obtiene el perfil de un usuario
-     * @param userPrincipal Usuario autenticado
+     * Obtiene un usuario por su id
+     * @param userId El id del usuario
      */
-    ApiResponse<ProfileResponseDto> getUserProfile(UserPrincipal userPrincipal);
+    ApiResponse<UserProfileResponseDto> getUserById(String userId);
 
     /**
-     * Actualiza un estudiante
-     * @param request El estudiante a actualizar
-     * @param studentId El id del estudiante
+     * Obtiene todos los usuarios
+     * @return Lista de usuarios de keycloak
      */
-    ApiResponse<StudentUpdateResponseDto> updateStudent(UpdateStudentRequestDto request, Long studentId);
+    ApiResponse<List<UserProfileResponseDto>> getAllUsers();
 
     /**
-     * Actualiza un arrendador
-     * @param request El arrendador a actualizar
-     * @param lessorId El id del arrendador
+     * Busca un usuario por su username
+     * @param username El username del usuario
+     * @return Usuario de keycloak
      */
-    ApiResponse<LessorUpdateResponseDto> updateLessor(UpdateLessorRequestDto request, Long lessorId);
+    ApiResponse<List<UserProfileResponseDto>> searchUserByUsername(String username);
+
+    /**
+     * Busca un usuario por su email
+     * @param email El email del usuario
+     * @return Usuario de keycloak
+     */
+    ApiResponse<List<UserProfileResponseDto>> searchUserByEmail(String email);
+
+    /**
+     * Busca un usuario por un atributo personalizado
+     * @param query El query de búsqueda (atributo:valor)
+     * @return Usuario de keycloak
+     */
+    ApiResponse<List<UserProfileResponseDto>> searchByCustomAttribute(String query);
+
+    /**
+     * Busca un usuario por su rol
+     * @param roleName El nombre del rol
+     * @return Usuario de keycloak
+     */
+    ApiResponse<List<UserProfileResponseDto>> searchByRole(String roleName);
+
+    /**
+     * Actualiza un usuario
+     * @param request Datos del usuario a actualizar
+     * @param userId El id del usuario
+     */
+    ApiResponse<Object> updateUser(UpdateUserRequestDto request, String userId);
+
+    /**
+     * Elimina un usuario
+     * @param userId El id del usuario
+     */
+    ApiResponse<Object> deleteUserByUserId(String userId);
 }

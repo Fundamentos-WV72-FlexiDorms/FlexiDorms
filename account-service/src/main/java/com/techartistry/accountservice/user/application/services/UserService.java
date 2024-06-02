@@ -1,97 +1,134 @@
 package com.techartistry.accountservice.user.application.services;
 
-import com.techartistry.accountservice.user.application.dto.request.*;
-import com.techartistry.accountservice.user.application.dto.response.LessorUpdateResponseDto;
-import com.techartistry.accountservice.user.application.dto.response.ProfileResponseDto;
-import com.techartistry.accountservice.user.application.dto.response.StudentUpdateResponseDto;
-import com.techartistry.accountservice.user.domain.enums.EGender;
-import com.techartistry.accountservice.user.domain.entities.Lessor;
-import com.techartistry.accountservice.user.domain.entities.Student;
-import com.techartistry.accountservice.security.domain.model.UserPrincipal;
-import com.techartistry.accountservice.shared.exception.CustomException;
-import com.techartistry.accountservice.shared.exception.ResourceNotFoundException;
-import com.techartistry.accountservice.user.infrastructure.repositories.IUserRepository;
 import com.techartistry.accountservice.shared.model.dto.ApiResponse;
+import com.techartistry.accountservice.user.application.dto.request.UpdateUserRequestDto;
+import com.techartistry.accountservice.user.application.dto.response.UserProfileResponseDto;
+import org.keycloak.admin.client.Keycloak;
+import org.keycloak.representations.idm.UserRepresentation;
 import org.modelmapper.ModelMapper;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
+
 @Service
 public class UserService implements IUserService {
-    private final IUserRepository userRepository;
+    private final Keycloak keycloak;
     private final ModelMapper modelMapper;
+    private final String REALM_NAME = "Flexidorms";
 
-    public UserService(IUserRepository userRepository, ModelMapper modelMapper) {
-        this.userRepository = userRepository;
+    public UserService(Keycloak keycloak, ModelMapper modelMapper) {
+        this.keycloak = keycloak;
         this.modelMapper = modelMapper;
     }
 
     @Override
-    public ApiResponse<ProfileResponseDto> getUserProfile(UserPrincipal userPrincipal) {
-        var user = userRepository.findById(userPrincipal.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getUserId()));
+    public ApiResponse<UserProfileResponseDto> getUserById(String userId) {
+        var userRepresentation = keycloak.realm(REALM_NAME)
+                .users()
+                .get(userId)
+                .toRepresentation();
 
-        var res = modelMapper.map(user, ProfileResponseDto.class);
+        //mapea el objeto de tipo UserRepresentation a un objeto de tipo UserProfileResponseDto
+        var res = modelMapper.map(userRepresentation, UserProfileResponseDto.class);
         return new ApiResponse<>("Ok", true, res);
     }
 
     @Override
-    public ApiResponse<StudentUpdateResponseDto> updateStudent(UpdateStudentRequestDto request, Long studentId) {
-        //1) se verifica si existe un usuario con el id dado
-        var user = userRepository.findById(studentId)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", studentId));
+    public ApiResponse<List<UserProfileResponseDto>> getAllUsers() {
+        var users = keycloak.realm(REALM_NAME)
+                .users()
+                .list();
 
-        //se valida que sea un estudiante
-        if (!(user instanceof Student)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "Error", "The user is not a student");
-        }
-
-        //2) actualiza los datos
-        user.setFullName(StringUtils.hasText(request.getFullName()) ? request.getFullName() : user.getFullName());
-        user.setPhoneNumber(StringUtils.hasText(request.getPhoneNumber()) ? request.getPhoneNumber() : user.getPhoneNumber());
-        user.setDni(StringUtils.hasText(request.getDni()) ? request.getDni() : user.getDni());
-        user.setBirthDate(request.getBirthDate() != null ? request.getBirthDate() : user.getBirthDate());
-        user.setGender(StringUtils.hasText(request.getGender()) ? EGender.valueOf(request.getGender()) : user.getGender());
-        user.setProfilePicture(StringUtils.hasText(request.getProfilePicture()) ? request.getProfilePicture() : user.getProfilePicture());
-        user.setEmail(StringUtils.hasText(request.getEmail()) ? request.getEmail() : user.getEmail());
-        user.setPassword(StringUtils.hasText(request.getPassword()) ? request.getPassword() : user.getPassword());
-        ((Student) user).setUniversity(StringUtils.hasText(request.getUniversity()) ? request.getUniversity() : ((Student) user).getUniversity());
-
-        //3) se actualiza el usuario
-        var studentUpdated = userRepository.save(user);
-
-        //4) convertir el objeto de tipo User (entity) a un objeto de tipo StudentResponseDto (dto)
-        var studentResponseDto = modelMapper.map(studentUpdated, StudentUpdateResponseDto.class);
-        return new ApiResponse<>("Student updated successfully", true, studentResponseDto);
+        //mapea la lista de objetos de tipo UserRepresentation a una lista de objetos de tipo UserProfileResponseDto
+        var res = users.stream()
+                .map(userRepresentation -> modelMapper.map(userRepresentation, UserProfileResponseDto.class))
+                .toList();
+        return new ApiResponse<>("Ok", true, res);
     }
 
     @Override
-    public ApiResponse<LessorUpdateResponseDto> updateLessor(UpdateLessorRequestDto request, Long lessorId) {
-        //1) se verifica si existe un usuario con el id dado
-        var user = userRepository.findById(lessorId)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", lessorId));
+    public ApiResponse<List<UserProfileResponseDto>> searchUserByUsername(String username) {
+        var users = keycloak.realm(REALM_NAME)
+                .users()
+                .searchByUsername(username, true);
 
-        //se valida que sea un arrendador
-        if (!(user instanceof Lessor)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "Error", "The user is not a lessor");
-        }
+        var res = users.stream()
+                .map(userRepresentation -> modelMapper.map(userRepresentation, UserProfileResponseDto.class))
+                .toList();
+        return new ApiResponse<>("Ok", true, res);
+    }
 
-        //2) actualiza los datos
-        user.setFullName(StringUtils.hasText(request.getFullName()) ? request.getFullName() : user.getFullName());
-        user.setPhoneNumber(StringUtils.hasText(request.getPhoneNumber()) ? request.getPhoneNumber() : user.getPhoneNumber());
-        user.setDni(StringUtils.hasText(request.getDni()) ? request.getDni() : user.getDni());
-        user.setBirthDate(request.getBirthDate() != null ? request.getBirthDate() : user.getBirthDate());
-        user.setGender(StringUtils.hasText(request.getGender()) ? EGender.valueOf(request.getGender()) : user.getGender());
-        user.setProfilePicture(StringUtils.hasText(request.getProfilePicture()) ? request.getProfilePicture() : user.getProfilePicture());
-        user.setEmail(StringUtils.hasText(request.getEmail()) ? request.getEmail() : user.getEmail());
-        user.setPassword(StringUtils.hasText(request.getPassword()) ? request.getPassword() : user.getPassword());
+    @Override
+    public ApiResponse<List<UserProfileResponseDto>> searchUserByEmail(String email) {
+        var users = keycloak.realm(REALM_NAME)
+                .users()
+                .searchByEmail(email, true);
+
+        var res = users.stream()
+                .map(userRepresentation -> modelMapper.map(userRepresentation, UserProfileResponseDto.class))
+                .toList();
+        return new ApiResponse<>("Ok", true, res);
+    }
+
+    @Override
+    public ApiResponse<List<UserProfileResponseDto>> searchByCustomAttribute(String query) {
+        var users = keycloak.realm(REALM_NAME)
+                .users()
+                .searchByAttributes(query);
+
+        var res = users.stream()
+                .map(userRepresentation -> modelMapper.map(userRepresentation, UserProfileResponseDto.class))
+                .toList();
+        return new ApiResponse<>("Ok", true, res);
+    }
+
+    @Override
+    public ApiResponse<List<UserProfileResponseDto>> searchByRole(String roleName) {
+        var users = keycloak.realm(REALM_NAME)
+                .roles()
+                .get(roleName)
+                .getUserMembers();
+
+        var res = users.stream()
+                .map(userRepresentation -> modelMapper.map(userRepresentation, UserProfileResponseDto.class))
+                .toList();
+        return new ApiResponse<>("Ok", true, res);
+    }
+
+    public ApiResponse<Object> updateUser(UpdateUserRequestDto request, String userId) {
+        //1) se obtiene el usuario
+        var existingUser = keycloak.realm(REALM_NAME)
+                .users()
+                .get(userId)
+                .toRepresentation();
+
+        //2) se actualizan los datos (atributos)
+        var attributes = existingUser.getAttributes();
+        attributes.put("phoneNumber", StringUtils.hasText(request.getPhoneNumber()) ? List.of(request.getPhoneNumber()) : attributes.get("phoneNumber"));
+        attributes.put("dni", StringUtils.hasText(request.getDni()) ? List.of(request.getDni()) : attributes.get("dni"));
+        attributes.put("gender", StringUtils.hasText(request.getGender()) ? List.of(request.getGender()) : attributes.get("gender"));
+        //se actualizan los datos
+        existingUser.setUsername(StringUtils.hasText(request.getUsername()) ? request.getUsername() : existingUser.getUsername());
+        existingUser.setFirstName(StringUtils.hasText(request.getFirstName()) ? request.getFirstName() : existingUser.getFirstName());
+        existingUser.setLastName(StringUtils.hasText(request.getLastName()) ? request.getLastName() : existingUser.getLastName());
+        existingUser.setEmail(StringUtils.hasText(request.getEmail()) ? request.getEmail() : existingUser.getEmail());
+        existingUser.setAttributes(attributes);
 
         //3) se actualiza el usuario
-        var lessorUpdated = userRepository.save(user);
+        keycloak.realm(REALM_NAME)
+                .users()
+                .get(userId)
+                .update(existingUser);
+        return new ApiResponse<>("User updated successfully", true, null);
+    }
 
-        //4) convertir el objeto de tipo User (entity) a un objeto de tipo LessorResponseDto (dto)
-        var lessorResponseDto = modelMapper.map(lessorUpdated, LessorUpdateResponseDto.class);
-        return new ApiResponse<>("Lessor updated successfully", true, lessorResponseDto);
+    @Override
+    public ApiResponse<Object> deleteUserByUserId(String userId) {
+        keycloak.realm(REALM_NAME)
+                .users()
+                .get(userId)
+                .remove();
+        return new ApiResponse<>("User deleted successfully", true, null);
     }
 }

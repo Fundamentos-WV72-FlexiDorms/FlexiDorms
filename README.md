@@ -29,3 +29,13 @@ This service is responsible for user management. Also, it provides the APIs for 
     - Windows: `netstat -aon | findstr [port]`
 - **Kill a process by PID:**
     - Windows: `taskkill /F /PID [pid]`
+
+## Config Keycloak:
+1. **Start Keycloak server:** With docker-compose or `docker run -p 9090:8080 -e KEYCLOAK_ADMIN=<username> -e KEYCLOAK_ADMIN_PASSWORD=<password> quay.io/keycloak/keycloak:24.0.4 start-dev`
+2. **Create a realm (tenant):** Use the app name
+3. **Create a client:** 
+    - In the input "Client ID" set: <app-name>-client
+    - Enable the "Client authentication" option that is AccessType=confidential
+    - In "Valid redirect URIs" input set `http://localhost:<gateway-port>/login/oauth2/code/<client-id>`, that is the URL where the client is going to be redirected after a successful login
+    - In "Web Origins" input set: `*`
+4. Create a user
