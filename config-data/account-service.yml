@@ -8,8 +8,9 @@ eureka:
     service-url:
       default-zone: http://localhost:8761/eureka
   instance:
-#    hostname: localhost
+    hostname: localhost
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+    prefer-ip-address: true
 
 #enable & expose actuator endpoints (for admin-server)
 management:
