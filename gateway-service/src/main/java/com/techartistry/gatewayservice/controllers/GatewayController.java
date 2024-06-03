@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
 @RestController
 public class GatewayController {
     /**
-     * Obtiene el id de la sesión
+     * Obtiene el id de la sesión HTTP
      * @param session Sesión
      */
     @GetMapping("/")
@@ -22,7 +22,7 @@ public class GatewayController {
     }
 
     /**
-     * Obtiene el token de acceso
+     * Obtiene el token de acceso JWT
      * @param authorizedClient Cliente autorizado
      */
     @GetMapping("/token")
