@@ -3,11 +3,14 @@ package com.techartistry.accountservice.user.application.services;
 import com.techartistry.accountservice.shared.exception.CustomException;
 import com.techartistry.accountservice.shared.exception.ResourceNotFoundException;
 import com.techartistry.accountservice.shared.model.dto.ApiResponse;
+import com.techartistry.accountservice.user.application.dto.request.ChangePasswordRequestDto;
 import com.techartistry.accountservice.user.application.dto.request.UpdateUserRequestDto;
 import com.techartistry.accountservice.user.application.dto.response.UserProfileResponseDto;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
+import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
+import org.keycloak.representations.idm.CredentialRepresentation;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -156,6 +159,32 @@ public class UserService implements IUserService {
                     .get(userId)
                     .remove();
             return new ApiResponse<>("User deleted successfully", true, null);
+
+        } catch (NotFoundException ex) {
+            throw new ResourceNotFoundException("User", "id", userId);
+        } catch (BadRequestException ex1) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "Error while fetching user details. Please try again later.", ex1.getMessage());
+        }
+    }
+
+    @Override
+    public ApiResponse<Object> changePassword(String userId, ChangePasswordRequestDto request) {
+        //si las contraseñas no coinciden
+        if (!request.newPassword().equals(request.confirmNewPassword())) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "Error while changing password", "Passwords do not match");
+        }
+
+        try {
+            var credentialRepresentation = new CredentialRepresentation();
+            credentialRepresentation.setTemporary(false);
+            credentialRepresentation.setType(OAuth2Constants.PASSWORD);
+            credentialRepresentation.setValue(request.newPassword());
+
+            keycloak.realm(REALM_NAME)
+                    .users()
+                    .get(userId)
+                    .resetPassword(credentialRepresentation);
+            return new ApiResponse<>("Password changed successfully", true, null);
 
         } catch (NotFoundException ex) {
             throw new ResourceNotFoundException("User", "id", userId);
