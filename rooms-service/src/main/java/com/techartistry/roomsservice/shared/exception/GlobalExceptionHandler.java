@@ -22,9 +22,9 @@ public class GlobalExceptionHandler {
             WebRequest webRequest
     ) {
         var errorMessage = new ErrorMessageResponse(
-                LocalDateTime.now(),
                 exception.getMessage(),
-                webRequest.getDescription(false)
+                webRequest.getDescription(false),
+                LocalDateTime.now()
         );
 
         return new ApiResponse<>("Resource not found", false, errorMessage);
@@ -55,9 +55,9 @@ public class GlobalExceptionHandler {
             WebRequest webRequest
     ) {
         var errorMessage = new ErrorMessageResponse(
-                LocalDateTime.now(),
                 exception.getMessage(),
-                webRequest.getDescription(false)
+                webRequest.getDescription(false),
+                LocalDateTime.now()
         );
 
         return new ApiResponse<>("An unexpected error has occurred", false, errorMessage);
@@ -84,12 +84,12 @@ public class GlobalExceptionHandler {
             WebRequest webRequest
     ) {
         var errorMessage = new ErrorMessageResponse(
-                LocalDateTime.now(),
                 exception.getDetails(),
-                webRequest.getDescription(false)
+                webRequest.getDescription(false),
+                LocalDateTime.now()
         );
 
-        var response = new ApiResponse<>("An error has occurred", false, errorMessage);
+        var response = new ApiResponse<>(exception.getMessage(), false, errorMessage);
         return new ResponseEntity<>(response, exception.getHttpStatus());
     }
 }
