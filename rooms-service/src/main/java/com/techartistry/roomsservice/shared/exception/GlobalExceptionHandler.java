@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @RestControllerAdvice
@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
         var errorMessage = new ErrorMessageResponse(
                 exception.getMessage(),
                 webRequest.getDescription(false),
-                LocalDateTime.now()
+                new Date()
         );
 
         return new ApiResponse<>("Resource not found", false, errorMessage);
@@ -57,7 +57,7 @@ public class GlobalExceptionHandler {
         var errorMessage = new ErrorMessageResponse(
                 exception.getMessage(),
                 webRequest.getDescription(false),
-                LocalDateTime.now()
+                new Date()
         );
 
         return new ApiResponse<>("An unexpected error has occurred", false, errorMessage);
@@ -70,7 +70,7 @@ public class GlobalExceptionHandler {
 //            WebRequest webRequest
 //    ) {
 //        var errorMessage = new ErrorMessageResponse(
-//                LocalDateTime.now(),
+//                new Date(),
 //                exception.getMessage(),
 //                webRequest.getDescription(false)
 //        );
@@ -86,7 +86,7 @@ public class GlobalExceptionHandler {
         var errorMessage = new ErrorMessageResponse(
                 exception.getDetails(),
                 webRequest.getDescription(false),
-                LocalDateTime.now()
+                new Date()
         );
 
         var response = new ApiResponse<>(exception.getMessage(), false, errorMessage);
