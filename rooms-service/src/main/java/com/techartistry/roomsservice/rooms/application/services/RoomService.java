@@ -111,14 +111,7 @@ public class RoomService implements IRoomService {
      * @return El arrendador
      */
     private Lessor getLessorById(String lessorId) {
-        //se obtiene el lessor por su id desde otro servicio (account-service)
         var lessorRes = lessorClient.getLessorById(lessorId);
-
-        //se valida si la respuesta del servicio es exitosa
-        if (!Objects.requireNonNull(lessorRes.getBody()).isSuccess() || lessorRes.getStatusCode() != HttpStatus.OK) {
-            throw new CustomException(lessorRes.getStatusCode(), "There was an error while trying to get the lessor", lessorRes.getBody().getMessage());
-        }
-
-        return lessorRes.getBody().getData();
+        return Objects.requireNonNull(lessorRes.getBody()).getData();
     }
 }

@@ -27,3 +27,16 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: http://localhost:9090/realms/Flexidorms
+
+#circuit breaker configuration
+resilience4j.circuitbreaker:
+  instances:
+    account-cb:
+      registerHealthIndicator: true
+      slidingWindowSize: 10
+      permittedNumberOfCallsInHalfOpenState: 3
+      slidingWindowType: TIME_BASED
+      minimumNumberOfCalls: 5
+      waitDurationInOpenState: 5s
+      failureRateThreshold: 50
+      eventConsumerBufferSize: 10
