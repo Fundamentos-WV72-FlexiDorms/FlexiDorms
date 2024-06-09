@@ -27,6 +27,7 @@
         <module>account-service</module>
         <module>notification-service</module>
         <module>rooms-service</module>
+        <module>bookings-service</module>
     </modules>
 
     <properties>
