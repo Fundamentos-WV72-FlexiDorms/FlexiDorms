@@ -15,4 +15,6 @@ public class ApiResponse<T> {
         this.isSuccess = isSuccess;
         this.data = data;
     }
+
+    public ApiResponse() {}
 }

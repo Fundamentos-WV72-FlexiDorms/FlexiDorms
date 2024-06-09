@@ -1,6 +1,7 @@
 package com.techartistry.accountservice.user.application.services;
 
 import com.techartistry.accountservice.shared.model.dto.ApiResponse;
+import com.techartistry.accountservice.user.application.dto.request.ChangePasswordRequestDto;
 import com.techartistry.accountservice.user.application.dto.request.UpdateUserRequestDto;
 import com.techartistry.accountservice.user.application.dto.response.UserProfileResponseDto;
 
@@ -59,4 +60,11 @@ public interface IUserService {
      * @param userId El id del usuario
      */
     ApiResponse<Object> deleteUserByUserId(String userId);
+
+    /**
+     * Cambia la contraseña de un usuario
+     * @param userId El id del usuario
+     * @param request La nueva contraseña
+     */
+    ApiResponse<Object> changePassword(String userId, ChangePasswordRequestDto request);
 }
