@@ -1,7 +1,6 @@
 package com.techartistry.roomsservice.rooms.application.dto.response;
 
 import com.techartistry.roomsservice.rooms.domain.entities.Lessor;
-import com.techartistry.roomsservice.rooms.domain.enums.ERoomStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,7 +17,6 @@ public class RoomResponseDto {
     private List<String> rules;
     private double price;
     private String imageUrl;
-    private ERoomStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Lessor lessor;

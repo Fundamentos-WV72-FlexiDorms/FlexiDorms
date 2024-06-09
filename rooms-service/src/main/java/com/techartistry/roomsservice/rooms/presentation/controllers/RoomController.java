@@ -46,8 +46,8 @@ public class RoomController {
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
-    @Operation(summary = "Get free rooms")
-    @GetMapping("/free")
+    @Operation(summary = "Get all rooms with pagination and sorting")
+    @GetMapping("/all")
     public ResponseEntity<ApiResponse<Page<RoomListResponseDto>>> listRooms(
             @RequestParam(defaultValue = "0") int pageNumber,
             @RequestParam(defaultValue = "10") int pageSize,

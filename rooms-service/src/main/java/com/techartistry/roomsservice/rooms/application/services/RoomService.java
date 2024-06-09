@@ -6,17 +6,14 @@ import com.techartistry.roomsservice.rooms.application.dto.response.RoomListResp
 import com.techartistry.roomsservice.rooms.application.dto.response.RoomResponseDto;
 import com.techartistry.roomsservice.rooms.domain.entities.Lessor;
 import com.techartistry.roomsservice.rooms.domain.entities.Room;
-import com.techartistry.roomsservice.rooms.domain.enums.ERoomStatus;
 import com.techartistry.roomsservice.rooms.infrastructure.repositories.IRoomRepository;
 import com.techartistry.roomsservice.shared.dto.ApiResponse;
-import com.techartistry.roomsservice.shared.exception.CustomException;
 import com.techartistry.roomsservice.shared.exception.ResourceNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -45,7 +42,6 @@ public class RoomService implements IRoomService {
         room.setRules(request.getRules());
         room.setPrice(request.getPrice());
         room.setImageUrl(request.getImageUrl());
-        room.setStatus(ERoomStatus.FREE);
         room.setLessorId(lessor.getId());
 
         roomRepository.save(room);
@@ -97,7 +93,7 @@ public class RoomService implements IRoomService {
                 (asc ? Sort.by(sortBy) : Sort.by(sortBy).descending())
         );
 
-        var rooms = roomRepository.findByStatus(ERoomStatus.FREE, pageable);
+        var rooms = roomRepository.findAll(pageable);
 
         //mapear Page<Room> a Page<RoomListResponseDto>
         var roomListResponse = rooms.map(room -> modelMapper.map(room, RoomListResponseDto.class));
