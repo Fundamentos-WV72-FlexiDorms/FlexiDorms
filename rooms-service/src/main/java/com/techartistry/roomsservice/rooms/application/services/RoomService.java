@@ -57,7 +57,7 @@ public class RoomService implements IRoomService {
         var lessor = getLessorById(room.getLessorId());
         room.setLessor(lessor);
 
-        //convertir el objeto de tipo Room (entity) a un objeto de tipo RegisterRoomResponseDto (dto)
+        //convertir el objeto de tipo Room (entity) a un objeto de tipo RoomResponseDto (dto)
         var roomResponseDto = modelMapper.map(room, RoomResponseDto.class);
         return new ApiResponse<>("Ok", true, roomResponseDto);
     }
@@ -67,7 +67,7 @@ public class RoomService implements IRoomService {
         var lessor = getLessorById(lessorId);
         var rooms = roomRepository.findByLessorId(lessorId);
 
-        //convertir la lista de objetos de tipo Room (entity) a una lista de objetos de tipo RegisterRoomResponseDto (dto)
+        //convertir la lista de objetos de tipo Room (entity) a una lista de objetos de tipo RoomResponseDto (dto)
         var roomResponseList = rooms.stream()
                 .map(room -> {
                     //asignar el lessor a la habitación desde la respuesta del servicio externo (account-service)
