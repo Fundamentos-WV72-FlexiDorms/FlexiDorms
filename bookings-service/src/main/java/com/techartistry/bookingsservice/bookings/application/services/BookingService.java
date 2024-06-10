@@ -13,11 +13,14 @@ import com.techartistry.bookingsservice.bookings.domain.enums.EBookingStatus;
 import com.techartistry.bookingsservice.bookings.domain.enums.EPaymentStatus;
 import com.techartistry.bookingsservice.bookings.infrastructure.repositories.IBookingRepository;
 import com.techartistry.bookingsservice.shared.dto.ApiResponse;
+import com.techartistry.bookingsservice.shared.exception.CustomException;
 import com.techartistry.bookingsservice.shared.exception.ResourceNotFoundException;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
@@ -57,6 +60,26 @@ public class BookingService implements IBookingService {
     public ApiResponse<Object> registerBooking(RegisterBookingRequestDto request) {
         var student = getUserById(request.getStudentId());
         var room = getRoomById(request.getRoomId());
+
+        //se valida que el checkInDate sea menor a checkOutDate
+        if (request.getCheckInDate().isAfter(request.getCheckOutDate())) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "Error registering booking", "CheckInDate must be before CheckOutDate");
+        }
+
+        //se verifica si la habitación está disponible en el rango de fechas
+        var overlappingBookings = bookingRepository.findOverlappingBookings(request.getRoomId(), request.getCheckInDate(), request.getCheckOutDate());
+
+        //si hay reservas superpuestas, se envía un mensaje de error
+        if (!overlappingBookings.isEmpty()) {
+            //se obtiene la reserva que termina más tarde
+            var nextBooking = bookingRepository.findNextAvailableBooking(request.getRoomId(), request.getCheckInDate()).getFirst();
+            var message = String.format(
+                "Room is not available in the specified time range. The room is occupied until %s.",
+                nextBooking.getCheckOutDate().format(DateTimeFormatter.ofPattern("hh:mm a, MMM dd"))
+            );
+
+            throw new CustomException(HttpStatus.BAD_REQUEST, "Error registering booking", message);
+        }
 
         //se calcula el total de la reserva (x horas)
         long totalHours = request.getCheckInDate().until(request.getCheckOutDate(), ChronoUnit.HOURS);
