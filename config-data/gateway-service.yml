@@ -37,6 +37,11 @@ spring:
             - Path=/swagger-ui/**
           filters:
             - RemoveRequestHeader=Cookie
+        - id: bookings-service
+          uri: lb://bookings-service
+          predicates:
+            - Path=/api/booking/**
+            - Path=/swagger-ui/**
 
 #logging requests
 logging:
