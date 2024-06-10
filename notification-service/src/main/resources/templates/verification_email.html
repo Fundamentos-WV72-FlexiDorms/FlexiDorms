@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Email de Confirmación</title>
+    <style>
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #846CD9;
+        }
+        .button {
+            background-color: transparent;
+            border: 2px solid #846CD9;
+            color: #846CD9;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 10px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .container {
+            text-align: center;
+            margin-top: 50px;
+        }
+        body {
+            font-family: Arial, sans-serif;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <b class="title">FlexiDorms</b> <br><br>
+    <b>¡Hola <span th:text="${user}" />!, gracias por registrarte</b>
+    <p>Para verificar tu cuenta, haz clic en el botón de abajo, recuerda que tienes 24 horas para confirmar tu cuenta.</p>
+    <a th:href="${verificationUrl}" class="button">Verificar mi cuenta</a>
+</div>
+</body>
+</html>

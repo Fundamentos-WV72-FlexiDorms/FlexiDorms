@@ -20,10 +20,14 @@
 
     <!-- microservices -->
     <modules>
-        <module>gateway-service</module>
-        <module>registry-service</module>
         <module>config-service</module>
-        <!--<module>userauth-service</module>-->
+        <module>registry-service</module>
+        <module>admin-service</module>
+        <module>gateway-service</module>
+        <module>account-service</module>
+        <module>notification-service</module>
+        <module>rooms-service</module>
+        <module>bookings-service</module>
     </modules>
 
     <properties>

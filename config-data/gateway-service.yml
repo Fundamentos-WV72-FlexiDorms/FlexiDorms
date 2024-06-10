@@ -5,25 +5,57 @@ server:
 #register with eureka
 eureka:
   client:
-    fetch-registry: true
-    register-with-eureka: true
     service-url:
       default-zone: http://localhost:8761/eureka
   instance:
-    hostname: localhost
+#    hostname: localhost
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
 
 #expose service's routes
 spring:
   cloud:
     gateway:
+      #register with eureka
       discovery:
         locator:
           enabled: true
+          lower-case-service-id: true
+      #filters that pass the token to the protected resources (resource servers)
+      default-filters:
+        - TokenRelay
       routes:
-        #id of the service (in uri field must be the same as this id)
-        - id: userauth-service
-          uri: lb://userauth-service
-          #routes to be exposed
+        - id: account-service
+          uri: lb://account-service
           predicates:
-            - Path=/user/**
-            - Path=/auth/**
+            - Path=/api/user/**
+            - Path=/api/auth/**
+            - Path=/swagger-ui/**
+        - id: rooms-service
+          uri: lb://rooms-service
+          predicates:
+            - Path=/api/room/**
+            - Path=/swagger-ui/**
+          filters:
+            - RemoveRequestHeader=Cookie
+        - id: bookings-service
+          uri: lb://bookings-service
+          predicates:
+            - Path=/api/booking/**
+            - Path=/swagger-ui/**
+
+#logging requests
+logging:
+  level:
+    org.springframework.cloud.gateway.handler.RoutePredicateHandlerMapping: TRACE
+
+#enable & expose actuator endpoints (for admin-server)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+    gateway:
+      enabled: true
