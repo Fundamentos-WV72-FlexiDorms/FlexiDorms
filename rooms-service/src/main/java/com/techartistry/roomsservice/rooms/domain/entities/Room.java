@@ -1,6 +1,5 @@
 package com.techartistry.roomsservice.rooms.domain.entities;
 
-import com.techartistry.roomsservice.rooms.domain.enums.ERoomStatus;
 import com.techartistry.roomsservice.rooms.infrastructure.mappers.StringListConverter;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -39,10 +38,6 @@ public class Room {
     private double price;
 
     private String imageUrl;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ERoomStatus status;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

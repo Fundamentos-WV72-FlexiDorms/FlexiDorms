@@ -1,6 +1,5 @@
 package com.techartistry.roomsservice.rooms.application.dto.response;
 
-import com.techartistry.roomsservice.rooms.domain.enums.ERoomStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,7 +13,6 @@ public class RoomListResponseDto {
     private String address;
     private double price;
     private String imageUrl;
-    private ERoomStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

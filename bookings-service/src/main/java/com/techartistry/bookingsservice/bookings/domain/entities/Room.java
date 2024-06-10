@@ -1,15 +1,17 @@
-package com.techartistry.roomsservice.rooms.application.dto.response;
+package com.techartistry.bookingsservice.bookings.domain.entities;
 
-import com.techartistry.roomsservice.rooms.domain.entities.Lessor;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Entidad Rooms (de rooms-service)
+ */
 @Setter
 @Getter
-public class RoomResponseDto {
+public class Room {
     private Long roomId;
     private String name;
     private String address;
@@ -19,7 +21,7 @@ public class RoomResponseDto {
     private String imageUrl;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Lessor lessor;
+    private User lessor;
 
-    public RoomResponseDto() {}
+    public Room() {}
 }
