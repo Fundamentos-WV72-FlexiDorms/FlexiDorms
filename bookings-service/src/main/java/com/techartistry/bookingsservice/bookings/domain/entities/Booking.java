@@ -48,7 +48,7 @@ public class Booking {
     //RELACIONES (NO SON FKs), los campos con @Transient no se guardan en la bd (son solo informativos)
     //una habitación puede tener muchas reservas
     @Column(name = "room_id", nullable = false)
-    private String roomId;
+    private Long roomId;
     @Transient
     private Room room;
 
@@ -58,8 +58,7 @@ public class Booking {
     @Transient
     private User student;
 
-    //un arrendador puede tener muchas reservas
-    @Column(name = "lessor_id",nullable = false)
+    @Column(name = "lessor_id", nullable = false)
     private String lessorId;
     @Transient
     private User lessor;
