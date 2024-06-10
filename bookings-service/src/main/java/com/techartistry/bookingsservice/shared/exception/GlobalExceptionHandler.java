@@ -1,7 +1,7 @@
 package com.techartistry.bookingsservice.shared.exception;
 
-import com.techartistry.roomsservice.shared.dto.ApiResponse;
-import com.techartistry.roomsservice.shared.exception.dto.ErrorMessageResponse;
+import com.techartistry.bookingsservice.shared.dto.ApiResponse;
+import com.techartistry.bookingsservice.shared.exception.dto.ErrorMessageResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
