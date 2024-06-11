@@ -13,6 +13,6 @@ public class KafkaProducerService {
     }
 
     public void publishBookingCreatedEvent(BookingCreatedEvent eventData) {
-        kafkaTemplate.send("account-events", eventData);
+        kafkaTemplate.send("payments-events", eventData);
     }
 }
