@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: payments-service
+  config:
+    import:
+      - configserver:http://localhost:8888
+      - env.properties
+  kafka:
+    bootstrap-servers: localhost:9092
+
+stripe-apikey: ${STRIPE_APIKEY}
