@@ -3,7 +3,7 @@ spring:
     name: gateway-service
   config:
     import:
-      - configserver:http://localhost:8888
+      - configserver:${CONFIG_SERVER:http://localhost:8888}
       - env.properties
 
   #oauth2 configuration for keycloak

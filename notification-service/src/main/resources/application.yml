@@ -3,7 +3,7 @@ spring:
     name: notification-service
   config:
     import:
-      - configserver:http://localhost:8888
+      - configserver:${CONFIG_SERVER:http://localhost:8888}
       - env.properties
   kafka:
     bootstrap-servers: localhost:9092
