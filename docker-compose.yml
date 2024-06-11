@@ -44,9 +44,127 @@ services:
       - "9090:8080"
     environment:
       KC_DB: postgres
-      KC_DB_URL: ${DB_URL}
-      KC_DB_USERNAME: ${DB_USER}
-      KC_DB_PASSWORD: ${DB_PASSWORD}
-      KEYCLOAK_ADMIN: ${ADMIN_USER:-admin}
-      KEYCLOAK_ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin}
+      KC_DB_URL: ${KC_DB_URL}
+      KC_DB_USERNAME: ${KC_DB_USERNAME}
+      KC_DB_PASSWORD: ${KC_DB_PASSWORD}
+      KEYCLOAK_ADMIN: ${KC_ADMIN_USER:-admin}
+      KEYCLOAK_ADMIN_PASSWORD: ${KC_ADMIN_PASSWORD:-admin}
       KEYCLOAK_JDBC_PARAMS: 'sslmode=require'
+
+  config-service:
+    container_name: config-service
+    build: ./config-service
+    ports:
+      - "8888:8888"
+    environment:
+      GIT_USERNAME: ${GIT_USERNAME}
+      GIT_PASSWORD: ${GIT_PASSWORD}
+
+  registry-service:
+    container_name: registry-service
+    build: ./registry-service
+    ports:
+      - "8761:8761"
+    environment:
+      CONFIG_SERVER: http://config-service:8888
+    depends_on:
+      - config-service
+
+  admin-service:
+    container_name: admin-service
+    build: ./admin-service
+    ports:
+      - "8081:8081"
+    environment:
+      CONFIG_SERVER: http://config-service:8888
+    depends_on:
+      - config-service
+      - registry-service
+
+  gateway-service:
+    container_name: gateway-service
+    build: ./gateway-service
+    ports:
+      - "8080:8080"
+    environment:
+      CONFIG_SERVER: http://config-service:8888
+      CLIENT_SECRET: ${CLIENT_SECRET}
+    depends_on:
+      - config-service
+      - registry-service
+      - keycloak
+
+  account-service:
+    container_name: account-service
+    build: ./account-service
+    ports:
+      - "8090:8090"
+    environment:
+      DB_URL: ${DB_URL}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      CONFIG_SERVER: http://config-service:8888
+    depends_on:
+      - config-service
+      - registry-service
+      - kafka1
+
+  rooms-service:
+    container_name: rooms-service
+    build: ./rooms-service
+    ports:
+      - "8091:8091"
+    environment:
+      DB_URL: ${DB_URL}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      CONFIG_SERVER: http://config-service:8888
+    depends_on:
+      - config-service
+      - registry-service
+
+  bookings-service:
+    container_name: bookings-service
+    build: ./bookings-service
+    ports:
+      - "8092:8092"
+    environment:
+      DB_URL: ${DB_URL}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      CONFIG_SERVER: http://config-service:8888
+    depends_on:
+      - config-service
+      - registry-service
+      - kafka1
+
+  notification-service:
+    container_name: notification-service
+    build: ./notification-service
+    ports:
+      - "8093:8093"
+    environment:
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      CONFIG_SERVER: http://config-service:8888
+    depends_on:
+      - config-service
+      - registry-service
+      - kafka1
+
+  payments-service:
+    container_name: payments-service
+    build: ./payments-service
+    ports:
+      - "8094:8094"
+    environment:
+      STRIPE_APIKEY: ${STRIPE_APIKEY}
+      CONFIG_SERVER: http://config-service:8888
+    depends_on:
+      - config-service
+      - registry-service
+      - kafka1
+
+networks:
+  flexired:
+    driver: bridge
