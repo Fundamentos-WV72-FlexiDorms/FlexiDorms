@@ -1,0 +1,22 @@
+#service port
+server:
+  port: ${PORT:${SERVER_PORT:0}} #random port
+
+#register with eureka
+eureka:
+  client:
+    service-url:
+      default-zone: http://localhost:8761/eureka
+  instance:
+    hostname: localhost
+
+#enable & expose actuator endpoints (for admin-server)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
