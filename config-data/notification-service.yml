@@ -1,6 +1,6 @@
 #service port
 server:
-  port: ${PORT:${SERVER_PORT:0}} #random port
+  port: 8093
 
 #register with eureka
 eureka:
