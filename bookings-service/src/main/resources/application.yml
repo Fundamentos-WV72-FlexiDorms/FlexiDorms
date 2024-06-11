@@ -3,7 +3,7 @@ spring:
     name: bookings-service
   config:
     import:
-      - configserver:http://localhost:8888
+      - configserver:${CONFIG_SERVER:http://localhost:8888}
       - env.properties
   datasource:
     url: ${DB_URL}
@@ -13,3 +13,5 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+  kafka:
+    bootstrap-servers: localhost:9092

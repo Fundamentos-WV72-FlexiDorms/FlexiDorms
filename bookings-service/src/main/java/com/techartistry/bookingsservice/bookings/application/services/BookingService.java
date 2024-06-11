@@ -11,7 +11,9 @@ import com.techartistry.bookingsservice.bookings.domain.entities.Room;
 import com.techartistry.bookingsservice.bookings.domain.entities.User;
 import com.techartistry.bookingsservice.bookings.domain.enums.EBookingStatus;
 import com.techartistry.bookingsservice.bookings.domain.enums.EPaymentStatus;
+import com.techartistry.bookingsservice.bookings.domain.events.BookingCreatedEvent;
 import com.techartistry.bookingsservice.bookings.infrastructure.repositories.IBookingRepository;
+import com.techartistry.bookingsservice.events.service.KafkaProducerService;
 import com.techartistry.bookingsservice.shared.dto.ApiResponse;
 import com.techartistry.bookingsservice.shared.exception.CustomException;
 import com.techartistry.bookingsservice.shared.exception.ResourceNotFoundException;
@@ -31,12 +33,14 @@ public class BookingService implements IBookingService {
     private final IBookingRepository bookingRepository;
     private final IRoomClient roomClient;
     private final IUserClient userClient;
+    private final KafkaProducerService kafkaProducerService;
 
-    public BookingService(ModelMapper modelMapper, IBookingRepository bookingRepository, IRoomClient roomClient, IUserClient userClient) {
+    public BookingService(ModelMapper modelMapper, IBookingRepository bookingRepository, IRoomClient roomClient, IUserClient userClient, KafkaProducerService kafkaProducerService) {
         this.modelMapper = modelMapper;
         this.bookingRepository = bookingRepository;
         this.roomClient = roomClient;
         this.userClient = userClient;
+        this.kafkaProducerService = kafkaProducerService;
     }
 
     @Override
@@ -97,6 +101,9 @@ public class BookingService implements IBookingService {
         booking.setLessorId(room.getLessor().getId());
 
         bookingRepository.save(booking);
+
+        //se publica el evento de reserva creada (para el servicio de pagos)
+        kafkaProducerService.publishBookingCreatedEvent(new BookingCreatedEvent(booking.getBookingId(), booking.getTotalAmount()));
 
         return new ApiResponse<>("Booking was successfully registered", true, null);
     }

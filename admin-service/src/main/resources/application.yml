@@ -3,4 +3,4 @@ spring:
     name: admin-service
   config:
     import:
-      - configserver:http://localhost:8888
+      - configserver:${CONFIG_SERVER:http://localhost:8888}

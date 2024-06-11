@@ -1,6 +1,6 @@
 #service port
 server:
-  port: 8090
+  port: 8094
 
 #register with eureka
 eureka:
@@ -20,10 +20,3 @@ management:
     health:
       show-details: always
 
-#Keycloak OAuth2 Configuration
-spring:
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: http://localhost:9090/realms/Flexidorms
