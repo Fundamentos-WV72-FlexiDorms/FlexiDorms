@@ -2,15 +2,6 @@
 server:
   port: 8080
 
-#register with eureka
-eureka:
-  client:
-    service-url:
-      default-zone: http://registry-service:8761/eureka
-  instance:
-#    hostname: localhost
-    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
-
 #expose service's routes
 spring:
   cloud:

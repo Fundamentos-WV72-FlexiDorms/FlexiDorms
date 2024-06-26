@@ -88,6 +88,7 @@ services:
       - "8080:8080"
     environment:
       CONFIG_SERVER: http://config-service:8888
+      EUREKA_SERVER: http://registry-service:8761/eureka
       KC_URL: http://host.docker.internal:9090/realms/Flexidorms
       CLIENT_SECRET: ${CLIENT_SECRET}
     depends_on:
