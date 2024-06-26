@@ -13,7 +13,7 @@ spring:
         provider:
           keycloak:
             user-name-attribute: preferred_username
-            issuer-uri: http://localhost:9090/realms/Flexidorms
+            issuer-uri: ${KC_URL:http://localhost:9090/realms/Flexidorms}
         registration:
           flexidorms-client:
             client-name: Flexidorms Keycloak
