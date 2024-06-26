@@ -19,16 +19,17 @@ public class OpenApiConfig {
                 .version("1.0.0")
             )
             .addSecurityItem(new SecurityRequirement()
-                .addList("JwtScheme")
+                .addList("OIDC")
             )
             .components(new Components()
-                //JWT
-                .addSecuritySchemes("JwtScheme",
+                .addSecuritySchemes("OIDC",
                     new SecurityScheme()
-                        .type(SecurityScheme.Type.HTTP)
-                        .description("Autorizar por un token JWT")
+                        .type(SecurityScheme.Type.OPENIDCONNECT)
+                        .description("Autorizar con Keycloak (OIDC)")
                         .scheme("bearer")
                         .bearerFormat("JWT")
+                        .in(SecurityScheme.In.HEADER)
+                        .openIdConnectUrl("http://localhost:9090/realms/Flexidorms/.well-known/openid-configuration")
                 )
             );
     }
